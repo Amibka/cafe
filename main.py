@@ -1,6 +1,7 @@
 ﻿import sqlite3
 import sys
 from pathlib import Path
+from shutil import copy2
 
 from PyQt6.QtWidgets import (
     QApplication,
@@ -16,15 +17,30 @@ from UI.ui_main import Ui_MainWindow
 
 def get_base_dir():
     if getattr(sys, "frozen", False):
-        meipass_path = getattr(sys, "_MEIPASS", "")
-        if meipass_path:
-            return Path(meipass_path).resolve()
         return Path(sys.executable).resolve().parent
     return Path(__file__).resolve().parent
 
 
 BASE_DIR = get_base_dir()
 DB_PATH = BASE_DIR / "data" / "coffee.sqlite"
+
+
+def ensure_database_exists():
+    if DB_PATH.exists():
+        return
+
+    DB_PATH.parent.mkdir(parents=True, exist_ok=True)
+
+    if not getattr(sys, "frozen", False):
+        return
+
+    meipass_path = getattr(sys, "_MEIPASS", "")
+    if not meipass_path:
+        return
+
+    bundled_db = Path(meipass_path) / "data" / "coffee.sqlite"
+    if bundled_db.exists():
+        copy2(bundled_db, DB_PATH)
 
 
 class AddEditCoffeeForm(QDialog):
@@ -245,6 +261,7 @@ class CoffeeApp(QMainWindow):
 
 
 if __name__ == "__main__":
+    ensure_database_exists()
     app = QApplication(sys.argv)
     window = CoffeeApp()
     window.show()
