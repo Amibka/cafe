@@ -12,9 +12,14 @@ ENV/
 # Packaging / build artifacts
 build/
 dist/
+release/
+*.spec
 *.egg-info/
 .eggs/
 pip-wheel-metadata/
+
+# PyInstaller cache
+.pyinstaller/
 
 # Test and tooling caches
 .pytest_cache/
@@ -41,8 +46,8 @@ Desktop.ini
 # Logs and local runtime files
 *.log
 *.tmp
+*.bak
 
 # SQLite local files
 *.sqlite-journal
 *.db-journal
-
